@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [SerializeField] private bool _isOccuppied;
     [SerializeField] private Enemy _currentEnemy;
     [SerializeField] private Obstacle _obstacle;
 
@@ -13,24 +12,26 @@ public class Tile : MonoBehaviour
     public void SetEnemy(Enemy enemy)
     {
         _currentEnemy = enemy;
-        _isOccuppied = true;
     }
 
     public void ClearTile()
     {
+        _currentEnemy.Die();
         _currentEnemy = null;
-        _isOccuppied = false;
     }
 
-    public bool IsOccuppied()
+    public bool TryGetEnemy(out Enemy enemy)
     {
-        return _isOccuppied;
+        if (_currentEnemy == null)
+        {
+            enemy = null;
+            return false;
+        }
+
+        enemy = _currentEnemy;
+        return true;
     }
 
-    public Enemy GetEnemy()
-    {
-        return _currentEnemy;
-    }
 
     public bool HasObstacle()
     {

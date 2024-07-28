@@ -11,13 +11,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _tileLayerMask;
     [SerializeField] private LayerMask _fieldLayerMask;
 
-    [SerializeField] private Transform _field;
     [SerializeField] private Transform _upperRaycaster;
     [SerializeField] private Transform _lowerRaycaster;
 
+    [SerializeField] private float _moveSpeed = 1f;
+
     private SwipeController _swipeController;
     private bool _isMoving;
-    private WaitForSeconds _delayTime = new WaitForSeconds(1f);
+    private WaitForSeconds _delayTime = new WaitForSeconds(0.2f);
+
+    private Tile _targetTile;
 
     private void Start()
     {
@@ -43,9 +46,31 @@ public class PlayerController : MonoBehaviour
 
         _isMoving = true;
         Array.Sort(hits, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
-        transform.DOLocalMove(hits[hits.Length - 1].transform.GetComponent<Tile>().GetTargetPosition(), 1f)
-            .SetEase(Ease.OutBounce)
+
+        foreach (var hit in hits)
+        {
+            if (hit.transform.GetComponent<Tile>().TryGetEnemy(out Enemy enemy))
+            {
+                _targetTile = hit.transform.GetComponent<Tile>();
+                break;
+            }
+        }
+
+        if (_targetTile == null)
+        {
+            transform.DOLocalMove(hits[hits.Length - 1].transform.GetComponent<Tile>().GetTargetPosition(), _moveSpeed)
+            .SetSpeedBased(true)
+            .SetEase(Ease.InSine)
             .OnComplete(FinishMovement);
+        }
+        else
+        {
+            transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
+            .SetSpeedBased(true)
+            .SetEase(Ease.InSine)
+            .OnComplete(FinishMovement);
+        }
+        
     }
 
     private IEnumerator Delay()
@@ -56,6 +81,12 @@ public class PlayerController : MonoBehaviour
 
     private void FinishMovement()
     {
+        if (_targetTile != null)
+        {
+            _targetTile.ClearTile();
+            _targetTile = null;
+        }
+
         _isMoving = false;
         OnFinishedMovement?.Invoke();
     }
