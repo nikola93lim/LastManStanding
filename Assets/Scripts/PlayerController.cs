@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     public event Action OnFinishedMovement;
 
     [SerializeField] private LayerMask _tileLayerMask;
+    [SerializeField] private LayerMask _fieldLayerMask;
+
     [SerializeField] private Transform _field;
     [SerializeField] private Transform _upperRaycaster;
     [SerializeField] private Transform _lowerRaycaster;
@@ -42,6 +44,7 @@ public class PlayerController : MonoBehaviour
         _isMoving = true;
         Array.Sort(hits, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
         transform.DOLocalMove(hits[hits.Length - 1].transform.GetComponent<Tile>().GetTargetPosition(), 1f)
+            .SetEase(Ease.OutBounce)
             .OnComplete(FinishMovement);
     }
 
@@ -60,7 +63,7 @@ public class PlayerController : MonoBehaviour
     private void StickToGround()
     {
         // Adjust the player's position to stick to the ground
-        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, _tileLayerMask))
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, Mathf.Infinity, _fieldLayerMask))
         {
             transform.DOMoveY(hit.point.y, 0.001f);
         }
