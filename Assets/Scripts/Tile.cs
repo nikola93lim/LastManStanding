@@ -14,8 +14,15 @@ public class Tile : MonoBehaviour
         _currentEnemy = enemy;
     }
 
+    public void SetObstacle(Obstacle obstacle)
+    {
+        _obstacle = obstacle;
+    }
+
     public void ClearTile()
     {
+        if (_currentEnemy == null) return;
+
         _currentEnemy.Die();
         _currentEnemy = null;
     }

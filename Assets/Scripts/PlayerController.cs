@@ -47,11 +47,23 @@ public class PlayerController : MonoBehaviour
         _isMoving = true;
         Array.Sort(hits, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
 
-        foreach (var hit in hits)
+        for (int i = 0; i < hits.Length; i++)
         {
-            if (hit.transform.GetComponent<Tile>().TryGetEnemy(out Enemy enemy))
+            if (hits[i].transform.GetComponent<Tile>().HasObstacle())
             {
-                _targetTile = hit.transform.GetComponent<Tile>();
+                if (i == 0)
+                {
+                    StartCoroutine(Delay());
+                    return;
+                }
+
+                _targetTile = hits[i - 1].transform.GetComponent<Tile>();
+                break;
+            }
+
+            if (hits[i].transform.GetComponent<Tile>().TryGetEnemy(out Enemy enemy))
+            {
+                _targetTile = hits[i].transform.GetComponent<Tile>();
                 break;
             }
         }
