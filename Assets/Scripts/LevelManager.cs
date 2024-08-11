@@ -41,4 +41,5 @@ public class LevelManager : MonoBehaviour
     }
 
     public Level GetCurrentLevel() => _levels[_currentLevel];
+    public int GetCurrentLevelIndex() => _currentLevel;
 }

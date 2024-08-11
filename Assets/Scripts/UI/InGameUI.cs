@@ -7,6 +7,7 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private LevelManager _levelManager;
     [SerializeField] private TextMeshProUGUI _enemyCountText;
     [SerializeField] private Image _enemyCountBar;
+    [SerializeField] private TextMeshProUGUI _levelText;
 
     private Level _currentLevel;
 
@@ -19,6 +20,7 @@ public class InGameUI : MonoBehaviour
         _levelManager.OnLevelStart += LevelManager_OnLevelStart;
 
         UpdateEnemyCountText();
+        UpdateLevelText();
     }
 
     private void LevelManager_OnLevelStart()
@@ -28,6 +30,7 @@ public class InGameUI : MonoBehaviour
         _currentLevel.OnEnemyDied += UpdateEnemyCountText;
 
         UpdateEnemyCountText();
+        UpdateLevelText();
     }
 
     private void LevelManager_OnLevelComplete()
@@ -44,5 +47,10 @@ public class InGameUI : MonoBehaviour
 
         _enemyCountText.text = $"{totalNumberOfEnemiesInTheLevel - currentNumberOfEnemiesAlive} / {totalNumberOfEnemiesInTheLevel}";
         _enemyCountBar.fillAmount = 1 - (float) currentNumberOfEnemiesAlive / totalNumberOfEnemiesInTheLevel;
+    }
+
+    private void UpdateLevelText()
+    {
+        _levelText.text = $"Level {_levelManager.GetCurrentLevelIndex() + 1}";
     }
 }
