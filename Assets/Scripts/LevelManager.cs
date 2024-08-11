@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    [SerializeField] private int _currentLevel = 0;
+    public event Action OnLevelComplete;
+    public event Action OnLevelStart;
 
+    [SerializeField] private int _currentLevel = 0;
     private Level[] _levels;
 
     private void Start()
@@ -16,17 +19,23 @@ public class LevelManager : MonoBehaviour
 
     private void CurrentLevel_OnLevelComplete()
     {
-        Debug.Log("Changing level");
-        ChangeLevels(_currentLevel, ++_currentLevel);
-        
+        FinishLevel();
     }
 
-    private void ChangeLevels(int currentLevel, int nextLevel)
+    private void FinishLevel()
     {
-        _levels[currentLevel].OnLevelComplete -= CurrentLevel_OnLevelComplete;
-        _levels[currentLevel].gameObject.SetActive(false);
+        _levels[_currentLevel].OnLevelComplete -= CurrentLevel_OnLevelComplete;
+        OnLevelComplete?.Invoke();
+    }
 
-        _levels[nextLevel].gameObject.SetActive(true);
-        _levels[nextLevel].OnLevelComplete += CurrentLevel_OnLevelComplete;
+    public void StartNextLevel()
+    {
+        _levels[_currentLevel].gameObject.SetActive(false);
+        _currentLevel++;
+
+        _levels[_currentLevel].gameObject.SetActive(true);
+        _levels[_currentLevel].OnLevelComplete += CurrentLevel_OnLevelComplete;
+
+        OnLevelStart?.Invoke();
     }
 }

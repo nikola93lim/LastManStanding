@@ -9,7 +9,8 @@ public class SwipeController : MonoBehaviour
     public event Action<Vector3> OnSwipe;
 
     [SerializeField] private PlayerController _playerController;
-    [SerializeField] private float _rotationSpeed = 5f;
+    [SerializeField] private float _rotationSpeed = 30f;
+    [SerializeField] private float _rotationResetSpeed = 60f;
     [SerializeField] private float _rotationAmount = 20f;
     private bool _canSwipe = true;
 
@@ -85,7 +86,7 @@ public class SwipeController : MonoBehaviour
     {
         if (_tween != null && _tween.IsPlaying()) _tween.Kill();
 
-        _tween = transform.DORotate(Vector3.zero, _rotationSpeed, RotateMode.Fast)
+        _tween = transform.DORotate(Vector3.zero, _rotationResetSpeed, RotateMode.Fast)
             .SetSpeedBased(true)
             .OnComplete(() => _canSwipe = true);
     }

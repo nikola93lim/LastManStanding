@@ -22,10 +22,26 @@ public class PlayerController : MonoBehaviour
 
     private Tile _targetTile;
 
-    private void Start()
+    private void OnEnable()
     {
         _swipeController = FindObjectOfType<SwipeController>();
-        _swipeController.OnSwipe += SwipeController_OnSwipe;
+
+        if (_swipeController != null)
+        {
+            _swipeController.OnSwipe += SwipeController_OnSwipe;
+        }
+        else
+        {
+            Debug.LogWarning("SwipeController not found.");
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_swipeController != null)
+        {
+            _swipeController.OnSwipe -= SwipeController_OnSwipe;
+        }
     }
 
     private void Update()
