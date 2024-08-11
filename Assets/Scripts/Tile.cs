@@ -6,6 +6,7 @@ public class Tile : MonoBehaviour
 {
     [SerializeField] private Enemy _currentEnemy;
     [SerializeField] private Obstacle _obstacle;
+    [SerializeField] private SpikeTrap _spikeTrap;
 
     [SerializeField] private Transform _centerPosition;
 
@@ -17,6 +18,11 @@ public class Tile : MonoBehaviour
     public void SetObstacle(Obstacle obstacle)
     {
         _obstacle = obstacle;
+    }
+
+    public void SetSpikeTrap(SpikeTrap spikeTrap)
+    {
+        _spikeTrap = spikeTrap;
     }
 
     public void ClearTile()
@@ -43,6 +49,18 @@ public class Tile : MonoBehaviour
     public bool HasObstacle()
     {
         return _obstacle != null;
+    }
+
+    public bool TryGetSpikeTrap(out SpikeTrap spikeTrap)
+    {
+        if (_spikeTrap != null)
+        {
+            spikeTrap = _spikeTrap;
+            return true;
+        }
+
+        spikeTrap = null;
+        return false;
     }
 
     public Vector3 GetTargetPosition()

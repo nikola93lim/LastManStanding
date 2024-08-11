@@ -4,9 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IKillable
 {
     public event Action OnFinishedMovement;
+    public event Action<Vector3> OnKilled;
 
     [SerializeField] private LayerMask _tileLayerMask;
     [SerializeField] private LayerMask _fieldLayerMask;
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     private WaitForSeconds _delayTime = new WaitForSeconds(0.2f);
 
     private Tile _targetTile;
+    private Vector3 _deathParticleDirection;
 
     private void OnEnable()
     {
@@ -65,7 +67,18 @@ public class PlayerController : MonoBehaviour
 
         for (int i = 0; i < hits.Length; i++)
         {
-            if (hits[i].transform.GetComponent<Tile>().HasObstacle())
+            Tile tile = hits[i].transform.GetComponent<Tile>();
+
+            if (tile.TryGetSpikeTrap(out SpikeTrap spikeTrap))
+            {
+                _targetTile = tile;
+                _deathParticleDirection = (_targetTile.transform.position - transform.position).normalized;
+
+                spikeTrap.Activate();
+                break;
+            }
+
+            if (tile.HasObstacle())
             {
                 if (i == 0)
                 {
@@ -77,9 +90,9 @@ public class PlayerController : MonoBehaviour
                 break;
             }
 
-            if (hits[i].transform.GetComponent<Tile>().TryGetEnemy(out Enemy enemy))
+            if (tile.TryGetEnemy(out Enemy enemy))
             {
-                _targetTile = hits[i].transform.GetComponent<Tile>();
+                _targetTile = tile;
                 break;
             }
         }
@@ -90,6 +103,13 @@ public class PlayerController : MonoBehaviour
             .SetSpeedBased(true)
             .SetEase(Ease.InCubic)
             .OnComplete(FinishMovement);
+        }
+        else if (_targetTile.TryGetSpikeTrap(out SpikeTrap spike))
+        {
+            transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
+            .SetSpeedBased(true)
+            .SetEase(Ease.InCubic)
+            .OnComplete(Die);
         }
         else
         {
@@ -117,6 +137,13 @@ public class PlayerController : MonoBehaviour
 
         _isMoving = false;
         OnFinishedMovement?.Invoke();
+    }
+
+    private void Die()
+    {
+        //
+        FinishMovement();
+        OnKilled?.Invoke(_deathParticleDirection);
     }
 
     private void StickToGround()
