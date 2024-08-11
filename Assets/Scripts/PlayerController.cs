@@ -72,14 +72,14 @@ public class PlayerController : MonoBehaviour
         {
             transform.DOLocalMove(hits[hits.Length - 1].transform.GetComponent<Tile>().GetTargetPosition(), _moveSpeed)
             .SetSpeedBased(true)
-            .SetEase(Ease.InSine)
+            .SetEase(Ease.InCubic)
             .OnComplete(FinishMovement);
         }
         else
         {
             transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
             .SetSpeedBased(true)
-            .SetEase(Ease.InSine)
+            .SetEase(Ease.InCubic)
             .OnComplete(FinishMovement);
         }
         

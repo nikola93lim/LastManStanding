@@ -1,10 +1,12 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public event Action<Enemy> OnDeath;
     [SerializeField] private LayerMask _tileLayerMask;
 
     private void Start()
@@ -14,6 +16,7 @@ public class Enemy : MonoBehaviour
     public void Die()
     {
         Destroy(gameObject);
+        OnDeath?.Invoke(this);
     }
 
     private void AssignToTile()
