@@ -6,8 +6,10 @@ using UnityEngine;
 public class Level : MonoBehaviour
 {
     public event Action OnLevelComplete;
+    public event Action OnEnemyDied;
 
     private List<Enemy> _enemies = new List<Enemy>();
+    private int _totalNumberOfEnemies;
 
     private void Awake()
     {
@@ -17,12 +19,16 @@ public class Level : MonoBehaviour
         {
             enemy.OnDeath += Enemy_OnDeath;
         }
+
+        _totalNumberOfEnemies = _enemies.Count;
     }
 
     private void Enemy_OnDeath(Enemy enemy)
     {
         enemy.OnDeath -= Enemy_OnDeath;
         _enemies.Remove(enemy);
+
+        OnEnemyDied?.Invoke();
 
         if (CheckIfAllEnemiesDead())
         {
@@ -33,5 +39,15 @@ public class Level : MonoBehaviour
     public bool CheckIfAllEnemiesDead()
     {
         return _enemies.Count == 0;
+    }
+
+    public int GetTotalNumberOfEnemies()
+    {
+        return _totalNumberOfEnemies;
+    }
+
+    public int GetCurrentNumberOfEnemiesAlive()
+    {
+        return _enemies.Count;
     }
 }

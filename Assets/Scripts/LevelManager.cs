@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -11,7 +12,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private int _currentLevel = 0;
     private Level[] _levels;
 
-    private void Start()
+    private void Awake()
     {
         _levels = GetComponentsInChildren<Level>(true);
         _levels[_currentLevel].OnLevelComplete += CurrentLevel_OnLevelComplete;
@@ -38,4 +39,6 @@ public class LevelManager : MonoBehaviour
 
         OnLevelStart?.Invoke();
     }
+
+    public Level GetCurrentLevel() => _levels[_currentLevel];
 }
