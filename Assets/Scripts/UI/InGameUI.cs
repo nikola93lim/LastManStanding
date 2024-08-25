@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class InGameUI : MonoBehaviour
@@ -9,41 +10,23 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private Image _enemyCountBar;
     [SerializeField] private TextMeshProUGUI _levelText;
 
-    private Level _currentLevel;
-
     private void Start()
     {
-        _currentLevel = _levelManager.GetCurrentLevel();
-        _currentLevel.OnEnemyDied += UpdateEnemyCountText;
-
-        _levelManager.OnLevelComplete += LevelManager_OnLevelComplete;
-        _levelManager.OnLevelStart += LevelManager_OnLevelStart;
-
+        _levelManager.OnEnemyDied += LevelManager_OnEnemyDied;
         UpdateEnemyCountText();
         UpdateLevelText();
     }
 
-    private void LevelManager_OnLevelStart()
+    private void LevelManager_OnEnemyDied()
     {
-        // update current level and subscribe to it's events
-        _currentLevel = _levelManager.GetCurrentLevel();
-        _currentLevel.OnEnemyDied += UpdateEnemyCountText;
-
         UpdateEnemyCountText();
-        UpdateLevelText();
-    }
-
-    private void LevelManager_OnLevelComplete()
-    {
-        // unsubscribe from previous level events
-        _currentLevel.OnEnemyDied -= UpdateEnemyCountText;
     }
 
     private void UpdateEnemyCountText()
     {
         // update ui text
-        int totalNumberOfEnemiesInTheLevel = _currentLevel.GetTotalNumberOfEnemies();
-        int currentNumberOfEnemiesAlive =_currentLevel.GetCurrentNumberOfEnemiesAlive();
+        int totalNumberOfEnemiesInTheLevel = _levelManager.GetTotalNumberOfEnemies();
+        int currentNumberOfEnemiesAlive = _levelManager.GetCurrentNumberOfEnemiesAlive();
 
         _enemyCountText.text = $"{totalNumberOfEnemiesInTheLevel - currentNumberOfEnemiesAlive} / {totalNumberOfEnemiesInTheLevel}";
         _enemyCountBar.fillAmount = 1 - (float) currentNumberOfEnemiesAlive / totalNumberOfEnemiesInTheLevel;
@@ -51,6 +34,6 @@ public class InGameUI : MonoBehaviour
 
     private void UpdateLevelText()
     {
-        _levelText.text = $"Level {_levelManager.GetCurrentLevelIndex() + 1}";
+        _levelText.text = $"Level {SceneManager.GetActiveScene().buildIndex.ToString()}";
     }
 }

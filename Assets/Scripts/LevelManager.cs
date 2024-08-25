@@ -1,63 +1,75 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
     public event Action OnLevelComplete;
     public event Action OnLevelFailed;
-    public event Action OnLevelStart;
+    public event Action OnEnemyDied;
 
-    [SerializeField] private int _currentLevel = 0;
-    private Level[] _levels;
+    private List<Enemy> _enemies = new List<Enemy>();
+    private int _totalNumberOfEnemies;
 
     private void Awake()
     {
-        _levels = GetComponentsInChildren<Level>(true);
-        _levels[_currentLevel].OnLevelComplete += CurrentLevel_OnLevelComplete;
-        _levels[_currentLevel].OnLevelFailed += CurrentLevel_OnLevelFailed;
+        _enemies = GetComponentsInChildren<Enemy>().ToList();
+
+        foreach (Enemy enemy in _enemies)
+        {
+            enemy.OnDeath += Enemy_OnDeath;
+        }
+
+        _totalNumberOfEnemies = _enemies.Count;
     }
 
-    private void CurrentLevel_OnLevelFailed()
+    private void Start()
     {
-        FailLevel();
+        FindObjectOfType<PlayerController>().OnKilled += PlayerController_OnKilled;
     }
 
-    private void CurrentLevel_OnLevelComplete()
+    private void PlayerController_OnKilled(Vector3 obj)
     {
-        FinishLevel();
-    }
-
-    private void FailLevel()
-    {
-        _levels[_currentLevel].OnLevelFailed -= CurrentLevel_OnLevelFailed;
         OnLevelFailed?.Invoke();
-    }
-
-    private void FinishLevel()
-    {
-        _levels[_currentLevel].OnLevelComplete -= CurrentLevel_OnLevelComplete;
-        OnLevelComplete?.Invoke();
     }
 
     public void RetryLevel()
     {
-
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void StartNextLevel()
     {
-        _levels[_currentLevel].gameObject.SetActive(false);
-        _currentLevel++;
-
-        _levels[_currentLevel].gameObject.SetActive(true);
-        _levels[_currentLevel].OnLevelComplete += CurrentLevel_OnLevelComplete;
-
-        OnLevelStart?.Invoke();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
-    public Level GetCurrentLevel() => _levels[_currentLevel];
-    public int GetCurrentLevelIndex() => _currentLevel;
+    private void Enemy_OnDeath(Enemy enemy)
+    {
+        enemy.OnDeath -= Enemy_OnDeath;
+        _enemies.Remove(enemy);
+
+        OnEnemyDied?.Invoke();
+
+        if (CheckIfAllEnemiesDead())
+        {
+            OnLevelComplete?.Invoke();
+        }
+    }
+
+    public bool CheckIfAllEnemiesDead()
+    {
+        return _enemies.Count == 0;
+    }
+
+    public int GetTotalNumberOfEnemies()
+    {
+        return _totalNumberOfEnemies;
+    }
+
+    public int GetCurrentNumberOfEnemiesAlive()
+    {
+        return _enemies.Count;
+    }
 }

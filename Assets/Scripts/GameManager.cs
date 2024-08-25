@@ -12,14 +12,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         _levelManager.OnLevelComplete += LevelManager_OnLevelComplete;
-        _levelManager.OnLevelStart += LevelManager_OnLevelStart;
 
-        _playerController = FindObjectOfType<PlayerController>();
-        _swipeController = FindObjectOfType<SwipeController>();
-    }
-
-    private void LevelManager_OnLevelStart()
-    {
         _playerController = FindObjectOfType<PlayerController>();
         _swipeController = FindObjectOfType<SwipeController>();
 

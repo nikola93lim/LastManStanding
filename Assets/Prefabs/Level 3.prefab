@@ -114,6 +114,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6720833912655226304, guid: 6f74cca1323ecbb42a114cb172d4f1cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6720833912655226304, guid: 6f74cca1323ecbb42a114cb172d4f1cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -148,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1051795861797774908, guid: 9860cd53aa911264a9980545b1c2f01d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.1
+      value: -4.2
       objectReference: {fileID: 0}
     - target: {fileID: 1051795861797774908, guid: 9860cd53aa911264a9980545b1c2f01d, type: 3}
       propertyPath: m_LocalRotation.w
