@@ -5,7 +5,7 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     [SerializeField] private Enemy _currentEnemy;
-    [SerializeField] private Obstacle _obstacle;
+    [SerializeField] private Box _obstacle;
     [SerializeField] private SpikeTrap _spikeTrap;
 
     [SerializeField] private Transform _centerPosition;
@@ -15,7 +15,7 @@ public class Tile : MonoBehaviour
         _currentEnemy = enemy;
     }
 
-    public void SetObstacle(Obstacle obstacle)
+    public void SetObstacle(Box obstacle)
     {
         _obstacle = obstacle;
     }

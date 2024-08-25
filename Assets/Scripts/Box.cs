@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Obstacle : MonoBehaviour
+public class Box : MonoBehaviour
 {
     [SerializeField] private LayerMask _tileLayerMask;
 

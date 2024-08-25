@@ -6,6 +6,7 @@ using UnityEngine;
 public class Level : MonoBehaviour
 {
     public event Action OnLevelComplete;
+    public event Action OnLevelFailed;
     public event Action OnEnemyDied;
 
     private List<Enemy> _enemies = new List<Enemy>();
@@ -21,6 +22,16 @@ public class Level : MonoBehaviour
         }
 
         _totalNumberOfEnemies = _enemies.Count;
+    }
+
+    private void Start()
+    {
+        FindObjectOfType<PlayerController>().OnKilled += PlayerController_OnKilled;
+    }
+
+    private void PlayerController_OnKilled(Vector3 obj)
+    {
+        OnLevelFailed?.Invoke();
     }
 
     private void Enemy_OnDeath(Enemy enemy)

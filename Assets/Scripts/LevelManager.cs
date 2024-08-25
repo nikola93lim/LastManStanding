@@ -7,6 +7,7 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     public event Action OnLevelComplete;
+    public event Action OnLevelFailed;
     public event Action OnLevelStart;
 
     [SerializeField] private int _currentLevel = 0;
@@ -16,6 +17,12 @@ public class LevelManager : MonoBehaviour
     {
         _levels = GetComponentsInChildren<Level>(true);
         _levels[_currentLevel].OnLevelComplete += CurrentLevel_OnLevelComplete;
+        _levels[_currentLevel].OnLevelFailed += CurrentLevel_OnLevelFailed;
+    }
+
+    private void CurrentLevel_OnLevelFailed()
+    {
+        FailLevel();
     }
 
     private void CurrentLevel_OnLevelComplete()
@@ -23,10 +30,21 @@ public class LevelManager : MonoBehaviour
         FinishLevel();
     }
 
+    private void FailLevel()
+    {
+        _levels[_currentLevel].OnLevelFailed -= CurrentLevel_OnLevelFailed;
+        OnLevelFailed?.Invoke();
+    }
+
     private void FinishLevel()
     {
         _levels[_currentLevel].OnLevelComplete -= CurrentLevel_OnLevelComplete;
         OnLevelComplete?.Invoke();
+    }
+
+    public void RetryLevel()
+    {
+
     }
 
     public void StartNextLevel()

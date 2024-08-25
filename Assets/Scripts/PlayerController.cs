@@ -72,9 +72,14 @@ public class PlayerController : MonoBehaviour, IKillable
             if (tile.TryGetSpikeTrap(out SpikeTrap spikeTrap))
             {
                 _targetTile = tile;
-                _deathParticleDirection = (_targetTile.transform.position - transform.position).normalized;
+                _deathParticleDirection = direction.normalized;
 
                 spikeTrap.Activate();
+
+                transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
+                .SetSpeedBased(true)
+                .SetEase(Ease.InCubic)
+                .OnComplete(Die);
                 break;
             }
 
@@ -87,12 +92,24 @@ public class PlayerController : MonoBehaviour, IKillable
                 }
 
                 _targetTile = hits[i - 1].transform.GetComponent<Tile>();
+
+                transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
+                .SetSpeedBased(true)
+                .SetEase(Ease.InCubic)
+                .OnComplete(FinishMovement);
+
                 break;
             }
 
             if (tile.TryGetEnemy(out Enemy enemy))
             {
                 _targetTile = tile;
+
+                transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
+                .SetSpeedBased(true)
+                .SetEase(Ease.InCubic)
+                .OnComplete(FinishMovement);
+
                 break;
             }
         }
@@ -100,25 +117,10 @@ public class PlayerController : MonoBehaviour, IKillable
         if (_targetTile == null)
         {
             transform.DOLocalMove(hits[hits.Length - 1].transform.GetComponent<Tile>().GetTargetPosition(), _moveSpeed)
-            .SetSpeedBased(true)
-            .SetEase(Ease.InCubic)
-            .OnComplete(FinishMovement);
+                .SetSpeedBased(true)
+                .SetEase(Ease.InCubic)
+                .OnComplete(FinishMovement);
         }
-        else if (_targetTile.TryGetSpikeTrap(out SpikeTrap spike))
-        {
-            transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
-            .SetSpeedBased(true)
-            .SetEase(Ease.InCubic)
-            .OnComplete(Die);
-        }
-        else
-        {
-            transform.DOLocalMove(_targetTile.GetTargetPosition(), _moveSpeed)
-            .SetSpeedBased(true)
-            .SetEase(Ease.InCubic)
-            .OnComplete(FinishMovement);
-        }
-        
     }
 
     private IEnumerator Delay()
@@ -141,7 +143,6 @@ public class PlayerController : MonoBehaviour, IKillable
 
     private void Die()
     {
-        //
         FinishMovement();
         OnKilled?.Invoke(_deathParticleDirection);
     }
